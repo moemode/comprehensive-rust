@@ -6,13 +6,23 @@ struct Node<T: Ord> {
     right: Subtree<T>,
 }
 
+impl<T: Ord> Node<T> {
+    fn new(value: T) -> Self {
+        Self {
+            value,
+            left: Subtree::new(),
+            right: Subtree::new(),
+        }
+    }
+}
+
 /// A possibly-empty subtree.
 #[derive(Debug)]
 struct Subtree<T: Ord>(Option<Box<Node<T>>>);
 
 impl<T: Ord> Subtree<T> {
     fn new() -> Self {
-        Subtree(None)
+        Self(None)
     }
 
     fn insert(&mut self, value: T) {
@@ -22,13 +32,7 @@ impl<T: Ord> Subtree<T> {
                 std::cmp::Ordering::Equal => return,
                 std::cmp::Ordering::Greater => node.right.insert(value),
             },
-            None => {
-                self.0 = Some(Box::new(Node {
-                    value,
-                    left: Subtree::new(),
-                    right: Subtree::new(),
-                }))
-            }
+            None => self.0 = Some(Box::new(Node::new(value))),
         }
     }
 
@@ -46,7 +50,7 @@ impl<T: Ord> Subtree<T> {
     fn len(&self) -> usize {
         match &self.0 {
             Some(node) => 1 + node.left.len() + node.right.len(),
-            None => 0
+            None => 0,
         }
     }
 }
