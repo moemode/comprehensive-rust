@@ -27,6 +27,39 @@ pub fn luhn(cc_number: &str) -> bool {
     n_digits >= 2 && sum % 10 == 0
 }
 
+pub fn luhn_alt(cc_number: &str) -> bool {
+    let digits: Vec<u32> = cc_number
+        .chars()
+        .filter(|&c| !c.is_whitespace())
+        .map(|c| c.to_digit(10))
+        .collect::<Option<Vec<_>>>()
+        .unwrap_or_default();
+
+    if digits.len() < 2 {
+        return false;
+    }
+
+    digits
+        .iter()
+        .rev()
+        .enumerate()
+        .map(|(i, &d)| {
+            if i % 2 == 1 {
+                let doubled = d * 2;
+                if doubled > 9 {
+                    doubled - 9
+                } else {
+                    doubled
+                }
+            } else {
+                d
+            }
+        })
+        .sum::<u32>()
+        % 10
+        == 0
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
